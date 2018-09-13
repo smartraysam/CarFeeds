@@ -1,13 +1,152 @@
 package com.softdev.smartraysam.carfeeds;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.softdev.smartraysam.carfeeds.adapter.FeedRecycleViewAdapter;
+import com.softdev.smartraysam.carfeeds.model.carModel;
+import com.softdev.smartraysam.carfeeds.util.HttpHandler;
+import com.softdev.smartraysam.carfeeds.util.ItemDivider;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    String CAR_FEED_URL = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
+    RecyclerView feedRecyclerView;
+    String TAG = MainActivity.class.getSimpleName();
+    ArrayList<carModel> feedList;
+    FeedRecycleViewAdapter feedRecycleViewAdapter;
+    carModel cModel;
+    ProgressDialog progressDialog;
+    public  static  String selectCar= "CAR_POSITION";
+    public  static  String carModels= "CAR_MODEL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        feedRecyclerView = findViewById(R.id.recycleList);
+        feedRecyclerView.hasFixedSize();
+        feedRecyclerView.addItemDecoration(new ItemDivider(this));
+        progressDialog=  new ProgressDialog(this);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        new GetCarFeeds().execute();
     }
+
+    private class GetCarFeeds extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+         //   progressDialog.setMessage("Loading data from DB...");
+        ////    progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... arg0) {
+            HttpHandler httpHandler = new HttpHandler();
+            // Making a request to url and getting response
+            String jsoncarFeed = httpHandler.getFeedFromstorage(getApplicationContext());
+            Log.e(MainActivity.class.getName(), "Response from url: " + jsoncarFeed);
+            feedList= new ArrayList<carModel>();
+            if (jsoncarFeed != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsoncarFeed);
+                    // Getting JSON Array node
+                    JSONArray placemarks = jsonObj.getJSONArray("placemarks");
+                    // looping through All placemarks
+                    for (int i = 0; i < placemarks.length(); i++) {
+                        JSONObject placemarkObj = placemarks.getJSONObject(i);
+                        String address = placemarkObj.getString("address");
+                        String name = placemarkObj.getString("name");
+                        String engineType = placemarkObj.getString("engineType");
+                        String exterior = placemarkObj.getString("exterior");
+                        String interior = placemarkObj.getString("interior");
+                        String vin = placemarkObj.getString("vin");
+                        int fuel = placemarkObj.getInt("fuel");
+                        // coordinate node is JSON Object
+                        JSONArray coordinate = placemarkObj.getJSONArray("coordinates");
+                        Double coordinateY = coordinate.getDouble(0);
+                        Double coordinateX = coordinate.getDouble(1);
+                        cModel = new carModel();
+                        cModel.setID(Long.valueOf(i));
+                        cModel.setAddress(address);
+                        cModel.setName(name);
+                        cModel.setEngineType(engineType);
+                        cModel.setExterior(exterior);
+                        cModel.setInterior(interior);
+                        cModel.setVin(vin);
+                        cModel.setFuel(fuel);
+                        cModel.setCoordinateX(coordinateX);
+                        cModel.setCoordinateY(coordinateY);
+                        feedList.add(cModel);
+                    }
+                } catch (final JSONException e) {
+                    Log.e(TAG, "Json parsing error: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Json parsing error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                }
+
+            } else {
+                Log.e(TAG, "Couldn't get json from server.");
+                progressDialog.cancel();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            progressDialog.cancel();
+            feedRecycleViewAdapter = new FeedRecycleViewAdapter(getApplicationContext(), feedList, new FeedRecycleViewAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View v, int position) {
+                    Log.d(TAG, "clicked position:" + position);
+                    Intent intent = new Intent(getBaseContext(), MapsActivity.class);
+                    intent.putExtra(selectCar,feedList.get(position).getID());
+                    intent.putExtra(carModels,feedList);
+                    startActivity(intent);
+
+                }
+            });
+            feedRecyclerView.setAdapter(feedRecycleViewAdapter);
+            feedRecycleViewAdapter.notifyDataSetChanged();
+        }
+    }
+
 }
