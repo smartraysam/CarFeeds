@@ -1,7 +1,6 @@
 package com.softdev.smartraysam.carfeeds;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -14,20 +13,20 @@ import android.widget.Toast;
 
 import com.softdev.smartraysam.carfeeds.adapter.FeedRecycleViewAdapter;
 import com.softdev.smartraysam.carfeeds.model.carModel;
-import com.softdev.smartraysam.carfeeds.util.HttpHandler;
 import com.softdev.smartraysam.carfeeds.util.ItemDivider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     FeedRecycleViewAdapter feedRecycleViewAdapter;
     carModel cModel;
     ProgressDialog progressDialog;
-    public  static  String selectCar= "CAR_POSITION";
-    public  static  String carModels= "CAR_MODEL";
+    public static String selectCar = "CAR_POSITION";
+    public static String carModels = "CAR_MODEL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,26 +47,40 @@ public class MainActivity extends AppCompatActivity {
         feedRecyclerView = findViewById(R.id.recycleList);
         feedRecyclerView.hasFixedSize();
         feedRecyclerView.addItemDecoration(new ItemDivider(this));
-        progressDialog=  new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        new GetCarFeeds().execute();
+        new GetCarFeeds().execute(CAR_FEED_URL);
     }
 
     private class GetCarFeeds extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-         //   progressDialog.setMessage("Loading data from DB...");
-        ////    progressDialog.show();
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
         }
 
         @Override
         protected String doInBackground(String... arg0) {
-            HttpHandler httpHandler = new HttpHandler();
-            // Making a request to url and getting response
-            String jsoncarFeed = httpHandler.getFeedFromstorage(getApplicationContext());
-            Log.e(MainActivity.class.getName(), "Response from url: " + jsoncarFeed);
-            feedList= new ArrayList<carModel>();
+            String jsoncarFeed = "";
+            try {
+                URL url = new URL(arg0[0]);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+                StringBuilder builder = new StringBuilder();
+                String inputString;
+                while ((inputString = bufferedReader.readLine()) != null) {
+                    builder.append(inputString);
+                }
+                jsoncarFeed = builder.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.e("JSONDATA", "Response from url: " + jsoncarFeed);
+            feedList = new ArrayList<carModel>();
             if (jsoncarFeed != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsoncarFeed);
@@ -120,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                "Couldn't get json from server.",
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -138,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(View v, int position) {
                     Log.d(TAG, "clicked position:" + position);
                     Intent intent = new Intent(getBaseContext(), MapsActivity.class);
-                    intent.putExtra(selectCar,feedList.get(position).getID());
-                    intent.putExtra(carModels,feedList);
+                    intent.putExtra(selectCar, feedList.get(position).getID());
+                    intent.putExtra(carModels, feedList);
                     startActivity(intent);
 
                 }
