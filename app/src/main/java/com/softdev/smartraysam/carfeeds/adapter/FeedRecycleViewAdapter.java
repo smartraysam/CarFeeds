@@ -1,9 +1,6 @@
 package com.softdev.smartraysam.carfeeds.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -26,7 +23,7 @@ public class FeedRecycleViewAdapter extends RecyclerView.Adapter<FeedsViewHolder
         public void onItemClick(View v, int position);
     }
 
-    public FeedRecycleViewAdapter(Context ctx,  ArrayList<carModel> feedLists, OnItemClickListener listener) {
+    public FeedRecycleViewAdapter(Context ctx, ArrayList<carModel> feedLists, OnItemClickListener listener) {
         inflater = LayoutInflater.from(ctx);
         this.feedLists =feedLists;
         this.listener=listener;

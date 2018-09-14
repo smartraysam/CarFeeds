@@ -1,12 +1,7 @@
 package com.softdev.smartraysam.carfeeds;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,7 +36,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         id= getIntent().getLongExtra(selectCar,0);
-        feedList=(ArrayList<carModel>) getIntent().getSerializableExtra(carModels);
+//       =(ArrayList<carModeldfd>) getIntent().getSerializableExtra(carModels);
+         feedList = getIntent().getParcelableArrayListExtra(carModels);
 
     }
     @Override
@@ -76,12 +72,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.setMapType(mMap.MAP_TYPE_NORMAL);
-        // Add a marker in Sydney and move the camera
-        Drawable  drawable = ContextCompat.getDrawable(this, R.drawable.carmarker);
-        Bitmap icon = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(icon);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
         for (int i = 0; i < feedList.size(); i++) {
             cModel= feedList.get(i);
             lat=cModel.getCoordinateX();
@@ -90,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(id.equals(cModel.getID())){
                 Marker mMarker = mMap.addMarker(new MarkerOptions()
                         .position(loc)
-                        .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmarker))
                         .title(cModel.getName())
                         .visible(true)
                         .anchor(0.5f, 1));
@@ -102,7 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Marker mMarker = mMap.addMarker(new MarkerOptions()
                         .position(loc)
                         .title(cModel.getName())
-                        .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmarker))
                         .anchor(0.5f, 1));
                 mMarker.setTag(i);
             }

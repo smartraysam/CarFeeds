@@ -3,6 +3,7 @@ package com.softdev.smartraysam.carfeeds;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     public static String selectCar = "CAR_POSITION";
     public static String carModels = "CAR_MODEL";
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +50,16 @@ public class MainActivity extends AppCompatActivity {
         feedRecyclerView.hasFixedSize();
         feedRecyclerView.addItemDecoration(new ItemDivider(this));
         progressDialog = new ProgressDialog(this);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         new GetCarFeeds().execute(CAR_FEED_URL);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new GetCarFeeds().execute(CAR_FEED_URL);
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private class GetCarFeeds extends AsyncTask<String, String, String> {
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
@@ -66,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 URL url = new URL(arg0[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
                 InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
                 StringBuilder builder = new StringBuilder();
@@ -81,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.e("JSONDATA", "Response from url: " + jsoncarFeed);
             feedList = new ArrayList<carModel>();
-            if (jsoncarFeed != null) {
+            if (!jsoncarFeed.equals("")) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsoncarFeed);
                     // Getting JSON Array node
@@ -100,17 +110,17 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray coordinate = placemarkObj.getJSONArray("coordinates");
                         Double coordinateY = coordinate.getDouble(0);
                         Double coordinateX = coordinate.getDouble(1);
-                        cModel = new carModel();
-                        cModel.setID(Long.valueOf(i));
-                        cModel.setAddress(address);
-                        cModel.setName(name);
-                        cModel.setEngineType(engineType);
-                        cModel.setExterior(exterior);
-                        cModel.setInterior(interior);
-                        cModel.setVin(vin);
-                        cModel.setFuel(fuel);
-                        cModel.setCoordinateX(coordinateX);
-                        cModel.setCoordinateY(coordinateY);
+                        cModel = new carModel(Long.valueOf(i),name,address,engineType,vin,exterior,interior,fuel,coordinateX,coordinateY);
+//                        cModel.setID(Long.valueOf(i));
+//                        cModel.setAddress(address);
+//                        cModel.setName(name);
+//                        cModel.setEngineType(engineType);
+//                        cModel.setExterior(exterior);
+//                        cModel.setInterior(interior);
+//                        cModel.setVin(vin);
+//                        cModel.setFuel(fuel);
+//                        cModel.setCoordinateX(coordinateX);
+//                        cModel.setCoordinateY(coordinateY);
                         feedList.add(cModel);
                     }
                 } catch (final JSONException e) {
@@ -152,7 +162,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "clicked position:" + position);
                     Intent intent = new Intent(getBaseContext(), MapsActivity.class);
                     intent.putExtra(selectCar, feedList.get(position).getID());
-                    intent.putExtra(carModels, feedList);
+                    intent.putParcelableArrayListExtra(carModels, feedList);
+//                    intent.putExtra(carModels, feedList);
                     startActivity(intent);
 
                 }
