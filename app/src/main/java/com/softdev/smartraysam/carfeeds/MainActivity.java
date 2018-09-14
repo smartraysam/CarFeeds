@@ -32,12 +32,12 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     String CAR_FEED_URL = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
-    RecyclerView feedRecyclerView;
+    public RecyclerView feedRecyclerView;
     String TAG = MainActivity.class.getSimpleName();
     ArrayList<carModel> feedList;
-    FeedRecycleViewAdapter feedRecycleViewAdapter;
+    public FeedRecycleViewAdapter feedRecycleViewAdapter;
     carModel cModel;
-    ProgressDialog progressDialog;
+    public ProgressDialog progressDialog;
     public static String selectCar = "CAR_POSITION";
     public static String carModels = "CAR_MODEL";
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private class GetCarFeeds extends AsyncTask<String, String, String> {
+    public class GetCarFeeds extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -111,16 +111,6 @@ public class MainActivity extends AppCompatActivity {
                         Double coordinateY = coordinate.getDouble(0);
                         Double coordinateX = coordinate.getDouble(1);
                         cModel = new carModel(Long.valueOf(i),name,address,engineType,vin,exterior,interior,fuel,coordinateX,coordinateY);
-//                        cModel.setID(Long.valueOf(i));
-//                        cModel.setAddress(address);
-//                        cModel.setName(name);
-//                        cModel.setEngineType(engineType);
-//                        cModel.setExterior(exterior);
-//                        cModel.setInterior(interior);
-//                        cModel.setVin(vin);
-//                        cModel.setFuel(fuel);
-//                        cModel.setCoordinateX(coordinateX);
-//                        cModel.setCoordinateY(coordinateY);
                         feedList.add(cModel);
                     }
                 } catch (final JSONException e) {
@@ -163,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(getBaseContext(), MapsActivity.class);
                     intent.putExtra(selectCar, feedList.get(position).getID());
                     intent.putParcelableArrayListExtra(carModels, feedList);
-//                    intent.putExtra(carModels, feedList);
                     startActivity(intent);
 
                 }

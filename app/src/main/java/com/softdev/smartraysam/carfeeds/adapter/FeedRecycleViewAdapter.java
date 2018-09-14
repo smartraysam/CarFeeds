@@ -20,7 +20,7 @@ public class FeedRecycleViewAdapter extends RecyclerView.Adapter<FeedsViewHolder
     OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        public void onItemClick(View v, int position);
+         void onItemClick(View v, int position);
     }
 
     public FeedRecycleViewAdapter(Context ctx, ArrayList<carModel> feedLists, OnItemClickListener listener) {
