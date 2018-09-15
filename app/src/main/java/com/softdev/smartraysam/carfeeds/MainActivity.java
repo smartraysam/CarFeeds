@@ -17,18 +17,7 @@ import com.softdev.smartraysam.carfeeds.Core.Presenter;
 import com.softdev.smartraysam.carfeeds.adapter.FeedRecycleViewAdapter;
 import com.softdev.smartraysam.carfeeds.model.carModel;
 import com.softdev.smartraysam.carfeeds.util.ItemDivider;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.softdev.smartraysam.carfeeds.util.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements GetDataContract.V
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(new ItemDivider(this));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -65,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements GetDataContract.V
     @Override
     public void onGetDataSuccess(String message, final List<carModel> allCars) {
         progressDialog.cancel();
-        feedRecycleViewAdapter = new FeedRecycleViewAdapter(getApplicationContext(), allCars, new FeedRecycleViewAdapter.OnItemClickListener() {
+        feedRecycleViewAdapter = new FeedRecycleViewAdapter(getApplicationContext(), allCars, new OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
                 Intent intent = new Intent(getBaseContext(), MapsActivity.class);

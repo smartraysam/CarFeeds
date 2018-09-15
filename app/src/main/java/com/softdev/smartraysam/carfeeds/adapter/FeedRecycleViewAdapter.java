@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.softdev.smartraysam.carfeeds.R;
 import com.softdev.smartraysam.carfeeds.model.carModel;
+import com.softdev.smartraysam.carfeeds.util.OnItemClickListener;
 import com.softdev.smartraysam.carfeeds.view.FeedsViewHolder;
 
 import java.util.List;
@@ -20,9 +21,6 @@ public class FeedRecycleViewAdapter extends RecyclerView.Adapter<FeedsViewHolder
     private Context ctx;
     OnItemClickListener listener;
 
-    public interface OnItemClickListener {
-         void onItemClick(View v, int position);
-    }
 
     public FeedRecycleViewAdapter(Context ctx, List<carModel> feedLists, OnItemClickListener listener) {
         inflater = LayoutInflater.from(ctx);

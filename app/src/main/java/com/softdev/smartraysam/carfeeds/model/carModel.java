@@ -9,6 +9,11 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+
+/**
+ * Created by Smart Raysam on 15-09-2018.
+ */
+
 public class carModel implements Parcelable {
     @SerializedName("name")
     @Expose
