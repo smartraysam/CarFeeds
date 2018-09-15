@@ -11,11 +11,12 @@ import com.softdev.smartraysam.carfeeds.R;
 import com.softdev.smartraysam.carfeeds.model.carModel;
 import com.softdev.smartraysam.carfeeds.view.FeedsViewHolder;
 
-import java.util.ArrayList;
+import java.util.List;
+
 
 public class FeedRecycleViewAdapter extends RecyclerView.Adapter<FeedsViewHolder> {
     private LayoutInflater inflater;
-    public  ArrayList<carModel>feedLists;
+    public List<carModel> feedLists;
     private Context ctx;
     OnItemClickListener listener;
 
@@ -23,7 +24,7 @@ public class FeedRecycleViewAdapter extends RecyclerView.Adapter<FeedsViewHolder
          void onItemClick(View v, int position);
     }
 
-    public FeedRecycleViewAdapter(Context ctx, ArrayList<carModel> feedLists, OnItemClickListener listener) {
+    public FeedRecycleViewAdapter(Context ctx, List<carModel> feedLists, OnItemClickListener listener) {
         inflater = LayoutInflater.from(ctx);
         this.feedLists =feedLists;
         this.listener=listener;
@@ -51,12 +52,12 @@ public class FeedRecycleViewAdapter extends RecyclerView.Adapter<FeedsViewHolder
             holder.mAddress.setText(Html.fromHtml("<b>Address:</b> "+cModel.getAddress()));
             holder.mEngine.setText(Html.fromHtml("<b>Engine Type:</b> "+cModel.getEngineType()));
             holder.mVin.setText(Html.fromHtml("<b>VIN:</b> "+cModel.getVin()));
-            holder.mFuel.setText(Html.fromHtml("<b>Fuel:</b> "+String.valueOf(cModel.getFuel())));
+            holder.mFuel.setText(Html.fromHtml("<b>Fuel:</b> "+ String.valueOf(cModel.getFuel())));
             holder.mExt.setText(Html.fromHtml("<b>Exterior:</b> "+cModel.getExterior()));
             holder.mInt.setText(Html.fromHtml("<b>Interior:</b> "+cModel.getInterior()));
-            holder.mXcoord.setText(Html.fromHtml("<b>Coordinate:</b> "+String .valueOf(cModel.getCoordinateX())));
-            holder.mYcoord.setText(String.valueOf(cModel.getCoordinateY()));
-
+            holder.mXcoord.setText(Html.fromHtml("<b>Coordinate:</b> "+ String.valueOf(cModel.getCoordinates().get(0))));
+            holder.mYcoord.setText(String.valueOf(cModel.getCoordinates().get(1)));
+            holder.mZcoord.setText(String.valueOf(cModel.getCoordinates().get(2)));
     }
     @Override
     public int getItemCount() {

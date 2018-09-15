@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.softdev.smartraysam.carfeeds.R;
 public class FeedsViewHolder extends RecyclerView.ViewHolder {
-    public TextView mName,mAddress,mEngine,mFuel,mVin,mExt,mInt,mXcoord,mYcoord;
+    public TextView mName,mAddress,mEngine,mFuel,mVin,mExt,mInt,mXcoord,mYcoord ,mZcoord;
     public FeedsViewHolder(View v){
         super(v);
         this.mAddress =v.findViewById(R.id.textAddress);
@@ -18,5 +18,6 @@ public class FeedsViewHolder extends RecyclerView.ViewHolder {
         this.mInt = v.findViewById(R.id.textInterior);
         this.mXcoord = v.findViewById(R.id.textXCoodinate);
         this.mYcoord = v.findViewById(R.id.textYCoordinate);
-        }
+        this.mZcoord = v.findViewById(R.id.textZCoordinate);
+    }
 }

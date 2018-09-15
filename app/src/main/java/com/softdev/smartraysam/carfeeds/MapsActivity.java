@@ -22,7 +22,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     SupportMapFragment mapFragment;
     Double lat, lng;
-    Long id;
+    String selectedCar;
     ArrayList<carModel> feedList;
     carModel cModel;
     LatLng loc;
@@ -35,7 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        id= getIntent().getLongExtra(selectCar,0);
+        selectedCar= getIntent().getStringExtra(selectCar);
 //       =(ArrayList<carModeldfd>) getIntent().getSerializableExtra(carModels);
          feedList = getIntent().getParcelableArrayListExtra(carModels);
 
@@ -74,10 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapType(mMap.MAP_TYPE_NORMAL);
         for (int i = 0; i < feedList.size(); i++) {
             cModel= feedList.get(i);
-            lat=cModel.getCoordinateX();
-            lng=cModel.getCoordinateY();
+            lat=cModel.getCoordinates().get(1);
+            lng=cModel.getCoordinates().get(0);
             loc = new LatLng(lat, lng);
-            if(id.equals(cModel.getID())){
+            if(cModel.getName().equals(selectedCar)){
                 Marker mMarker = mMap.addMarker(new MarkerOptions()
                         .position(loc)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmarker))

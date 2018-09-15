@@ -3,20 +3,42 @@ package com.softdev.smartraysam.carfeeds.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class carModel implements Parcelable {
+    @SerializedName("name")
+    @Expose
     private String name;
+    @SerializedName("address")
+    @Expose
     private String address;
+    @SerializedName("engineType")
+    @Expose
     private String engineType;
+    @SerializedName("vin")
+    @Expose
     private String vin;
+    @SerializedName("fuel")
+    @Expose
     private int fuel;
+    @SerializedName("exterior")
+    @Expose
     private String exterior;
+    @SerializedName("interior")
+    @Expose
     private String interior;
-    private double coordinateX;
-    private double coordinateY;
+    @SerializedName("coordinates")
+    @Expose
+    public List<Double> coordinates;
     private long id;
 
 
-    public carModel(long id, String name, String address,String engineType, String vin, String exterior, String interior, int fuel, double coordinateX, double coordinateY) {
+
+    public carModel(long id, String name, String address, String engineType, String vin, String exterior, String interior, int fuel, List<Double>coordinates) {
         this.id=id;
         this.name =name;
         this.address = address;
@@ -25,25 +47,18 @@ public class carModel implements Parcelable {
         this.exterior =exterior;
         this.interior=interior;
         this.fuel=fuel;
-        this.coordinateX=coordinateX;
-        this.coordinateY=coordinateY;
+        this.coordinates=coordinates;
 
 
     }
-
 
     public String getAddress() {
         return address;
     }
-    public Double getCoordinateX() {
-        return coordinateX;
-    }
     public Long getID() {
         return id;
     }
-    public Double getCoordinateY() {
-        return coordinateY;
-    }
+
     public String getEngineType() {
         return engineType;
     }
@@ -59,11 +74,9 @@ public class carModel implements Parcelable {
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
+    public  List<Double> getCoordinates(){
+        return coordinates;
     }
-
     public int getFuel() {
         return fuel;
     }
@@ -71,7 +84,7 @@ public class carModel implements Parcelable {
         return vin;
     }
 
-   public  carModel (Parcel in) {
+    public carModel(Parcel in) {
         id = in.readLong();
         name = in.readString();
         address = in.readString();
@@ -80,8 +93,8 @@ public class carModel implements Parcelable {
         fuel = in.readInt();
         exterior = in.readString();
         interior = in.readString();
-        coordinateX = in.readDouble();
-        coordinateY = in.readDouble();
+        coordinates= new ArrayList<Double>();
+        in.readList(coordinates,null);
     }
 
     @Override
@@ -99,9 +112,7 @@ public class carModel implements Parcelable {
         dest.writeInt(this.fuel);
         dest.writeString(this.exterior);
         dest.writeString(this.interior);
-        dest.writeDouble(this.coordinateX);
-        dest.writeDouble(this.coordinateY);
-
+        dest.writeList(this.coordinates);
     }
 
     public static final Creator<carModel> CREATOR = new Creator<carModel>() {
