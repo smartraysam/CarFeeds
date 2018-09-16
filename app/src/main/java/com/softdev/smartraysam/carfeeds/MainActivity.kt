@@ -18,31 +18,35 @@ import com.softdev.smartraysam.carfeeds.model.carModel
 import com.softdev.smartraysam.carfeeds.util.ItemDivider
 import com.softdev.smartraysam.carfeeds.util.OnItemClickListener
 import java.util.ArrayList
+import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), GetDataContract.View {
+class MainActivity : AppCompatActivity(), GetDataContract.View{
     private var mPresenter: Presenter? = null
-    private var recyclerView: RecyclerView?=null
+
     private var linearLayoutManager: LinearLayoutManager?= null
     private var feedRecycleViewAdapter: FeedRecycleViewAdapter? = null
     private  var progressDialog: ProgressDialog?=null
-    private var mSwipeRefreshLayout: SwipeRefreshLayout?=null
+
     internal var baseURL = "https://s3-us-west-2.amazonaws.com"
+    private var recyclerView: RecyclerView?=null
+    private var mSwipeRefreshLayout: SwipeRefreshLayout?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        recyclerView = findViewById(R.id.recycleList)
+        mSwipeRefreshLayout = findViewById(R.id.refresh_layout)
         progressDialog = ProgressDialog(this)
         mPresenter = Presenter(this)
         mPresenter!!.getDataFromURL(applicationContext, baseURL, "Loading")
-        recyclerView = findViewById(R.id.recycleList)
-        mSwipeRefreshLayout = findViewById(R.id.refresh_layout)
         linearLayoutManager = LinearLayoutManager(this)
         recyclerView!!.layoutManager = linearLayoutManager
         recyclerView!!.addItemDecoration(ItemDivider(this))
         mSwipeRefreshLayout!!.setOnRefreshListener {
-            mPresenter!!.getDataFromURL(applicationContext, "", "Loading")
+            mPresenter!!.getDataFromURL(applicationContext, baseURL, "Loading")
             mSwipeRefreshLayout!!.isRefreshing = false
         }
+
     }
 
     override fun onGetDataSuccess(message: String, allCars: List<carModel>) {
@@ -62,6 +66,7 @@ class MainActivity : AppCompatActivity(), GetDataContract.View {
 
     override fun onGetDataFailure(message: String) {
         Log.d("Status", message)
+        progressDialog!!.cancel()
         Toast.makeText(this, "Error occur while loading", Toast.LENGTH_SHORT).show()
     }
 
