@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements GetDataContract.V
     public static String selectCar = "CAR_POSITION";
     public static String carModels = "CAR_MODEL";
     SwipeRefreshLayout mSwipeRefreshLayout;
+    String baseURL="https://s3-us-west-2.amazonaws.com";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +38,9 @@ public class MainActivity extends AppCompatActivity implements GetDataContract.V
         setContentView(R.layout.activity_main);
         progressDialog = new ProgressDialog(this);
         mPresenter = new Presenter(this);
-        mPresenter.getDataFromURL(getApplicationContext(), "","Loading");
-        recyclerView = (RecyclerView)findViewById(R.id.recycleList);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        mPresenter.getDataFromURL(getApplicationContext(), baseURL,"Loading");
+        recyclerView =findViewById(R.id.recycleList);
+        mSwipeRefreshLayout =findViewById(R.id.refresh_layout);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDivider(this));

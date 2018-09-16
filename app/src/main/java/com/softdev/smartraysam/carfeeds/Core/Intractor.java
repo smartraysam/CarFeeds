@@ -31,7 +31,7 @@ public class Intractor implements GetDataContract.Interactor{
                 .setLenient()
                 .create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://s3-us-west-2.amazonaws.com")
+                .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         CarFeedsResponse request = retrofit.create(CarFeedsResponse.class);

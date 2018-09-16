@@ -30,6 +30,7 @@ public class Presenter implements GetDataContract.Presenter, GetDataContract.onG
     @Override
     public void onSuccess(String message, List<carModel> allData) {
         mGetDataView.onGetDataSuccess(message, allData);
+
     }
 
     @Override
